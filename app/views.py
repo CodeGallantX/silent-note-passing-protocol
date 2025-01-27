@@ -73,17 +73,13 @@ def write(request):
             sender = User.objects.get(username=sender_username)
             receiver = User.objects.get(username=receiver_username)
 
-            # Get subject and body
             subject = request.POST['subject']
             body = request.POST['body']
 
-            # Create the note
             Note.objects.create(sender=sender, receiver=receiver, subject=subject, body=body)
 
-            # Return success message
             return render(request, 'write.html', {'message': 'Note sent successfully!'})
         except User.DoesNotExist:
-            # Handle cases where the sender or receiver username does not exist
             return render(request, 'write.html', {'error': 'Sender or receiver username not found.'})
     return render(request, 'write.html')
 
