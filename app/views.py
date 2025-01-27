@@ -13,7 +13,6 @@ from .models import Note
 def index(request):
     return render(request, 'index.html')
 
-# Registration view
 def register(request):
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -24,8 +23,10 @@ def register(request):
         elif User.objects.filter(username=username).exists():
             messages.error(request, "Username already taken. Please choose a different username.")
         else:
-            User.objects.create(username=username, password=password)
+            # Create the user with hashed password
+            user = User.objects.create_user(username=username, password=password)
             messages.success(request, "Registration successful! Redirecting...")
+            login(request, user)
             return redirect('/inbox')
     return render(request, 'register.html')
 
@@ -42,15 +43,16 @@ def user_login(request):
             if user is not None:
                 login(request, user)
                 messages.success(request, f"Welcome back, {user.username}!")
-                return redirect(inbox)
+                return redirect('/inbox')
             else:
                 messages.error(request, "Invalid username or password.")
     return render(request, 'login.html')
 
+
 def logout_user(request):
     auth_logout(request)
     messages.success("You have been logged out.")
-    return redirect(index)
+    return redirect(user_login)
 
 @login_required
 def inbox(request):
