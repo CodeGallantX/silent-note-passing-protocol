@@ -1,11 +1,11 @@
 import re
 from django.shortcuts import render, redirect, get_object_or_404
-
+from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib import messages
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login, logout as auth_logout
+from django.contrib.auth import authenticate, login, logout as auth_logout, update_session_auth_hash
 from django.http import JsonResponse
 from .models import Note
 
@@ -99,3 +99,19 @@ def delete_note(request, note_id):
         note.delete()
         return messages.success({"success": True, "message": "Note deleted successfully"})
     return JsonResponse({"success": False, "message": "Invalid request method"})
+
+def reset_password(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            form.save()
+            # Keep the user logged in after changing password
+            update_session_auth_hash(request, form.user)
+            messages.success(request, 'Your password was successfully updated!')
+            return redirect('user_login')
+        else:
+            messages.error(request, 'Please correct the error below.')
+    else:
+        form = PasswordChangeForm(request.user)
+    
+    return render(request, 'reset-password.html', {'form': form})
