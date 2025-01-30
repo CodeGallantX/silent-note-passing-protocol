@@ -7,25 +7,20 @@
 <div class="p-4 pt-8">
     <h1 class="text-3xl font-bold text-zinc-700 mb-6">Sent Messages</h1>
     <div>
-        {% if notes %}
-        <ul class="space-y-4">
-            {% for note in notes %}
-            <li class="p-4 border rounded-md shadow-sm">
-                <p><strong>To:</strong> {{ note.receiver.username }}</p>
-                <p><strong>Subject:</strong> {{ note.subject }}</p>
-                <p><strong>Body:</strong> {{ note.body }}</p>
-                <p class="text-sm text-gray-500"><strong>Sent at:</strong> {{ note.created_at }}</p>
-            </li>
-            {% endfor %}
-        </ul>
-        {% else %}
-        <p>No sent notes to display.</p>
-        {% endif %}
+        {% for note in notes %}
+        <div class="border p-4 mb-4 rounded-lg shadow-lg cursor-pointer hover:bg-gray-100"
+            onclick="showModal('{{ note.id }}', '{{ note.subject }}', '{{ note.body }}')">
+            <div class="font-bold text-lg">{{ note.subject }}</div>
+            <div class="text-sm text-gray-600">{{ note.receiver }}</div>
+            <div class="text-sm text-gray-500">{{ note.created_at|date:"Y-m-d H:i A" }}</div>
+            <p class="text-sm text-gray-700 mt-2">{{ note.body }}</p>
+        </div>
+        {% empty %}
+        <p class="text-gray-500">No sent messages.</p>
+        {% endfor %}
     </div>
-</div>
 
 
-<!-- Modal -->
 <div id="messageModal" class="hidden fixed inset-0 bg-gray-900/50 flex items-center justify-center">
     <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
         <h2 id="modalTitle" class="text-xl font-bold mb-4"></h2>
