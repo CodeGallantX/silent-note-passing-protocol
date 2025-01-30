@@ -60,7 +60,7 @@ def inbox(request):
         messages.error(request, "You must be logged in to view your inbox.")
         return redirect(login)
     else:
-        notes = Note.objects.filter(receiver=request.user)
+        notes = Note.objects.filter(receiver=request.user).order_by('-created_at')
         context= {
             'notes': notes
         }
@@ -88,7 +88,7 @@ def write(request):
 @login_required
 def sent(request): 
     sent_notes = Note.objects.filter(sender=request.user).order_by('-created_at')
-    return render(request, 'sent.html', {'sent_notes': sent_notes})
+    return render(request, 'sent.html', context)
 
 @csrf_exempt
 def delete_note(request, note_id):
